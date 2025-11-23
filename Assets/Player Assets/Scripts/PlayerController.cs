@@ -55,6 +55,7 @@ public class PlayerController : MonoBehaviour
         else 
         {
             moveX = 0f;
+            animator.SetBool("Is Moving", false);
         }
 
         if (Input.GetKey("a") && Input.GetKey("d") && onGround)
@@ -62,22 +63,17 @@ public class PlayerController : MonoBehaviour
             moveX = 0f;
         }
 
-        if (rb.velocity.x == 0)
-        {
-            animator.SetBool("Is Moving", false);
-        }
+        Vector2 raycastOrigin = (Vector2)transform.position + new Vector2(0.3f, 0f);
+        Vector2 raycastOrigin1 = (Vector2)transform.position + new Vector2(0f, 0f);
+        Vector2 raycastOrigin2 = (Vector2)transform.position + new Vector2(-0.3f, 0f);
 
-        Vector2 raycastOrigin = (Vector2)transform.position + new Vector2(-2.2f, -4.5f);
-        Vector2 raycastOrigin1 = (Vector2)transform.position + new Vector2(0, -4.5f);
-        Vector2 raycastOrigin2 = (Vector2)transform.position + new Vector2(2.2f, -4.5f);
+        raycastGround = Physics2D.Raycast(raycastOrigin, Vector2.down, 1.5f, groundLayer); 
+        raycastGround1 = Physics2D.Raycast(raycastOrigin1, Vector2.down, 1.5f, groundLayer); 
+        raycastGround2 = Physics2D.Raycast(raycastOrigin2, Vector2.down, 1.5f, groundLayer); 
 
-        raycastGround = Physics2D.Raycast(raycastOrigin, Vector2.down, 1f, groundLayer); 
-        raycastGround1 = Physics2D.Raycast(raycastOrigin1, Vector2.down, 1f, groundLayer); 
-        raycastGround2 = Physics2D.Raycast(raycastOrigin2, Vector2.down, 1f, groundLayer); 
-
-        Debug.DrawRay(raycastOrigin, Vector2.down * 1f, Color.red);
-        Debug.DrawRay(raycastOrigin1, Vector2.down * 1f, Color.green);
-        Debug.DrawRay(raycastOrigin2, Vector2.down * 1f, Color.blue);
+        Debug.DrawRay(raycastOrigin, Vector2.down * 1.5f, Color.red);
+        Debug.DrawRay(raycastOrigin1, Vector2.down * 1.5f, Color.green);
+        Debug.DrawRay(raycastOrigin2, Vector2.down * 1.5f, Color.blue);
 
         //Ground Detection
         if (raycastGround.collider != null || raycastGround1.collider != null || raycastGround2.collider != null)

@@ -12,7 +12,7 @@ public class JumpingFallingController : MonoBehaviour
     public float airtime;
     private bool isHanging;
     public int dropJumpButton;
-    private bool hasHanged = false;
+    public bool hasHanged = false;
 
 
     
