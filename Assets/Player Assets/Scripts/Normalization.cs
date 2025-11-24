@@ -5,7 +5,7 @@ using UnityEngine;
 public class Normalization : MonoBehaviour
 {
     [SerializeField] private bool isNormalizationOn = false;
-     [SerializeField] private float timerCurrentTime = 5f;
+     [SerializeField] public float timerCurrentTime = 5f;
      [SerializeField] public float maxTimerDuration =6f;
     private GameObject[] objs;
 
