@@ -34,10 +34,9 @@ public class JumpingFallingController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Space) && playerController.onGround == false)
         {
-            dropJumpButton = dropJumpButton + 1;
+            dropJumpButton += 1;
         }
 
-        // Falling handler when dropping jumping button
         if (dropJumpButton == 1)
         {
             if (!Input.GetKey("a") && !Input.GetKey("d"))
@@ -49,14 +48,14 @@ public class JumpingFallingController : MonoBehaviour
                 else
                 {
                     rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-                    dropJumpButton = dropJumpButton + 1;
+                    dropJumpButton += 1;
                     return;
                 }
             }
             else
             {
                 rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-                dropJumpButton = dropJumpButton + 1;
+                dropJumpButton += 1;
             }
         }
     }
@@ -94,3 +93,4 @@ public class JumpingFallingController : MonoBehaviour
         }
     }
 }
+

@@ -42,7 +42,12 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         // Horizontal movement handler
-        if (Input.GetKey("a"))
+        if (Input.GetKey("a") && Input.GetKey("d"))
+        {
+            moveX = 0f;
+            animator.SetBool("Is Moving", false);
+        }
+        else if (Input.GetKey("a"))
         {
             moveX = -1f;
             sprite.flipX = true;
@@ -60,9 +65,9 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("Is Moving", false);
         }
 
-        if (Input.GetKey("left shift")) // Caminar al mantener Shift
+        if (Input.GetKey("left shift")) 
         {
-            moveX *= 0.5f;  // Reducir la velocidad al caminar
+            moveX *= 0.5f;  
         }
 
         Vector2 raycastOrigin = (Vector2)transform.position + new Vector2(0.3f, 0f);
