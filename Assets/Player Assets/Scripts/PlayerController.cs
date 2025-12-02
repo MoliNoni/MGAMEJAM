@@ -51,26 +51,6 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetKey("a"))
             {
-                moveX = -1f;
-                sprite.flipX = true;
-                animator.SetBool("Is Moving", true);
-            }
-            else if (Input.GetKey("d"))
-            {
-                moveX = 1f;
-                sprite.flipX = false;
-                animator.SetBool("Is Moving", true);
-            }
-            else
-            {
-                moveX = 0f;
-                animator.SetBool("Is Moving", false);
-            }
-        }
-        else
-        {
-            if (Input.GetKey("a"))
-            {
                 moveX = -0.5f;
                 sprite.flipX = true;
                 animator.SetBool("Is Moving", true);
@@ -87,11 +67,32 @@ public class PlayerController : MonoBehaviour
                 animator.SetBool("Is Moving", false);
             }
         }
+        else
+        {
+            if (Input.GetKey("a"))
+            {
+                moveX = -1f;
+                sprite.flipX = true;
+                animator.SetBool("Is Moving", true);
+            }
+            else if (Input.GetKey("d"))
+            {
+                moveX = 1f;
+                sprite.flipX = false;
+                animator.SetBool("Is Moving", true);
+            }
+            else
+            {
+                moveX = 0f;
+                animator.SetBool("Is Moving", false);
+            }
+        }
 
 
         if (Input.GetKey("a") && Input.GetKey("d") && onGround)
         {
             moveX = 0f;
+            animator.SetBool("Is Moving", false);
         }
 
         Vector2 raycastOrigin = (Vector2)transform.position + new Vector2(0.3f, 0f);
