@@ -1,18 +1,16 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D rb;
-    private JumpingFallingController  jumpingFallingController;
+    private JumpingFallingController jumpingFallingController;
     private Animator animator;
     private float moveX = 0;
     private float originalGravityScale;
     private Queue<KeyCode> inputBuffer;
-    [SerializeField ] private float minimalJumpVariable;
+    [SerializeField] private float minimalJumpVariable;
     public float maxAirTime;
     public bool canJump;
     [SerializeField] private bool canDoubleJump;
@@ -21,7 +19,7 @@ public class PlayerController : MonoBehaviour
     public bool jumpInput;
     public float constantHorizontalSpeed = 1450f;
     public float constantVerticalSpeed = 77f;
-    public float doubleJumpHeightPenalty =10f;
+    public float doubleJumpHeightPenalty = 10f;
     public float constantWalkingSpeed = 1000f;
     [SerializeField] private LayerMask groundLayer;
     public float coyoteAirTime;
@@ -31,9 +29,6 @@ public class PlayerController : MonoBehaviour
     public bool onGround;
     private SpriteRenderer sprite;
 
-
-
-   
     void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
@@ -45,53 +40,29 @@ public class PlayerController : MonoBehaviour
     }
 
     void Update()
-    {   //Horizontal movement handler
-
-        if (Input.GetKey("left shift"))
+    {
+        // Horizontal movement handler
+        if (Input.GetKey("a"))
         {
-            if (Input.GetKey("a"))
-            {
-                moveX = -1f;
-                sprite.flipX = true;
-                animator.SetBool("Is Moving", true);
-            }
-            else if (Input.GetKey("d"))
-            {
-                moveX = 1f;
-                sprite.flipX = false;
-                animator.SetBool("Is Moving", true);
-            }
-            else
-            {
-                moveX = 0f;
-                animator.SetBool("Is Moving", false);
-            }
+            moveX = -1f;
+            sprite.flipX = true;
+            animator.SetBool("Is Moving", true);
+        }
+        else if (Input.GetKey("d"))
+        {
+            moveX = 1f;
+            sprite.flipX = false;
+            animator.SetBool("Is Moving", true);
         }
         else
         {
-            if (Input.GetKey("a"))
-            {
-                moveX = -0.5f;
-                sprite.flipX = true;
-                animator.SetBool("Is Moving", true);
-            }
-            else if (Input.GetKey("d"))
-            {
-                moveX = 0.5f;
-                sprite.flipX = false;
-                animator.SetBool("Is Moving", true);
-            }
-            else
-            {
-                moveX = 0f;
-                animator.SetBool("Is Moving", false);
-            }
+            moveX = 0f;
+            animator.SetBool("Is Moving", false);
         }
 
-
-        if (Input.GetKey("a") && Input.GetKey("d") && onGround)
+        if (Input.GetKey("left shift")) // Caminar al mantener Shift
         {
-            moveX = 0f;
+            moveX *= 0.5f;  // Reducir la velocidad al caminar
         }
 
         Vector2 raycastOrigin = (Vector2)transform.position + new Vector2(0.3f, 0f);
@@ -102,11 +73,7 @@ public class PlayerController : MonoBehaviour
         raycastGround1 = Physics2D.Raycast(raycastOrigin1, Vector2.down, 1.5f, groundLayer); 
         raycastGround2 = Physics2D.Raycast(raycastOrigin2, Vector2.down, 1.5f, groundLayer); 
 
-        Debug.DrawRay(raycastOrigin, Vector2.down * 1.5f, Color.red);
-        Debug.DrawRay(raycastOrigin1, Vector2.down * 1.5f, Color.green);
-        Debug.DrawRay(raycastOrigin2, Vector2.down * 1.5f, Color.blue);
-
-        //Ground Detection
+        // Ground Detection
         if (raycastGround.collider != null || raycastGround1.collider != null || raycastGround2.collider != null)
         {
             canJump = true;
@@ -116,7 +83,8 @@ public class PlayerController : MonoBehaviour
         {
             onGround = false;
         }
-        //Jump detection and queueing
+
+        // Jump detection and queueing
         if (Input.GetKeyDown(KeyCode.Space))
         {
             inputBuffer.Enqueue(KeyCode.Space);
@@ -136,65 +104,49 @@ public class PlayerController : MonoBehaviour
             maxAirTime = 0f;
             hasJumped = false;
         }
-        //Jumping setting & jumping queue handler 
+
+        // Jumping setting & jumping queue handler
         if (onGround == true)
         {   
-            coyoteAirTime = 0; //Coyote airtime always zero when toching ground
+            coyoteAirTime = 0; // Coyote airtime always zero when touching ground
             if (inputBuffer.Count > 0)
             {
                 if (inputBuffer.Peek() == KeyCode.Space)
                 {
                     rb.velocity = new Vector2(rb.velocity.x, constantVerticalSpeed);
                     inputBuffer.Dequeue();   
-                     
-                }
                     hasJumped = true; 
                     canDoubleJump = true;  
+                }
             } 
         }
-        else    //Coyote time
+        else // Coyote time
         {
             coyoteAirTime += Time.deltaTime;
         }
-        
-        if (onGround == false && coyoteAirTime < 0.18f && Input.GetKeyDown(KeyCode.Space))
+
+        // Double Jump
+        if (canDoubleJump && inputBuffer.Count > 0)
         {
-            rb.velocity = new Vector2(rb.velocity.x, constantVerticalSpeed);
-            inputBuffer.Dequeue();
-            coyoteAirTime = 0;   
-        }  
-
-    // Double Jump
-
-    if (canDoubleJump && inputBuffer.Count > 0)
-    {
-        if (inputBuffer.Peek() == KeyCode.Space)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, constantVerticalSpeed-doubleJumpHeightPenalty);
-            inputBuffer.Dequeue();            
-            canDoubleJump = false; 
-        } 
-            
-    }
-
+            if (inputBuffer.Peek() == KeyCode.Space)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, constantVerticalSpeed - doubleJumpHeightPenalty);
+                inputBuffer.Dequeue();
+                canDoubleJump = false; 
+            } 
+        }
     }
 
     void removeJumpQueue()
     {
-        if (inputBuffer.Count>0)
+        if (inputBuffer.Count > 0)
         {
             inputBuffer.Dequeue();
         }
-        
     }
 
     void FixedUpdate()
     {   
-
         rb.velocity = new Vector2(moveX * constantHorizontalSpeed, rb.velocity.y);
-
-
-
-
     }
 }
