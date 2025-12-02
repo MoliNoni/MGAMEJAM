@@ -15,15 +15,22 @@ public class PlayerController : MonoBehaviour
     [SerializeField ] private float minimalJumpVariable;
     public float maxAirTime;
     public bool canJump;
+    [SerializeField] private bool canDoubleJump;
+    [SerializeField] private bool hasJumped;
+
     public bool jumpInput;
     public float constantHorizontalSpeed = 1450f;
     public float constantVerticalSpeed = 77f;
+    public float doubleJumpHeightPenalty =10f;
+    public float constantWalkingSpeed = 1000f;
     [SerializeField] private LayerMask groundLayer;
     public float coyoteAirTime;
     public RaycastHit2D raycastGround;
     public RaycastHit2D raycastGround1;
     public RaycastHit2D raycastGround2;
     public bool onGround;
+    private SpriteRenderer sprite;
+
 
 
    
@@ -34,29 +41,53 @@ public class PlayerController : MonoBehaviour
         originalGravityScale = rb.gravityScale;
         inputBuffer = new Queue<KeyCode>();
         jumpingFallingController = gameObject.GetComponent<JumpingFallingController>();
+        sprite = GetComponent<SpriteRenderer>();
     }
 
     void Update()
     {   //Horizontal movement handler
 
-        if (Input.GetKey("a"))
+        if (Input.GetKey("left shift"))
         {
-            
-            moveX = -1f;
-            gameObject.GetComponent<SpriteRenderer>().flipX = true;
-            animator.SetBool("Is Moving", true);
+            if (Input.GetKey("a"))
+            {
+                moveX = -1f;
+                sprite.flipX = true;
+                animator.SetBool("Is Moving", true);
+            }
+            else if (Input.GetKey("d"))
+            {
+                moveX = 1f;
+                sprite.flipX = false;
+                animator.SetBool("Is Moving", true);
+            }
+            else
+            {
+                moveX = 0f;
+                animator.SetBool("Is Moving", false);
+            }
         }
-        else if (Input.GetKey("d"))
+        else
         {
-            moveX = 1f;
-            gameObject.GetComponent<SpriteRenderer>().flipX = false;
-            animator.SetBool("Is Moving", true);
+            if (Input.GetKey("a"))
+            {
+                moveX = -0.5f;
+                sprite.flipX = true;
+                animator.SetBool("Is Moving", true);
+            }
+            else if (Input.GetKey("d"))
+            {
+                moveX = 0.5f;
+                sprite.flipX = false;
+                animator.SetBool("Is Moving", true);
+            }
+            else
+            {
+                moveX = 0f;
+                animator.SetBool("Is Moving", false);
+            }
         }
-        else 
-        {
-            moveX = 0f;
-            animator.SetBool("Is Moving", false);
-        }
+
 
         if (Input.GetKey("a") && Input.GetKey("d") && onGround)
         {
@@ -103,6 +134,7 @@ public class PlayerController : MonoBehaviour
             canJump = true;
             jumpingFallingController.dropJumpButton = 0;
             maxAirTime = 0f;
+            hasJumped = false;
         }
         //Jumping setting & jumping queue handler 
         if (onGround == true)
@@ -113,8 +145,11 @@ public class PlayerController : MonoBehaviour
                 if (inputBuffer.Peek() == KeyCode.Space)
                 {
                     rb.velocity = new Vector2(rb.velocity.x, constantVerticalSpeed);
-                    inputBuffer.Dequeue();       
+                    inputBuffer.Dequeue();   
+                     
                 }
+                    hasJumped = true; 
+                    canDoubleJump = true;  
             } 
         }
         else    //Coyote time
@@ -128,6 +163,20 @@ public class PlayerController : MonoBehaviour
             inputBuffer.Dequeue();
             coyoteAirTime = 0;   
         }  
+
+    // Double Jump
+
+    if (canDoubleJump && inputBuffer.Count > 0)
+    {
+        if (inputBuffer.Peek() == KeyCode.Space)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, constantVerticalSpeed-doubleJumpHeightPenalty);
+            inputBuffer.Dequeue();            
+            canDoubleJump = false; 
+        } 
+            
+    }
+
     }
 
     void removeJumpQueue()
