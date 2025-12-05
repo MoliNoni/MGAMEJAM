@@ -83,10 +83,12 @@ public class PlayerController : MonoBehaviour
         {
             canJump = true;
             onGround = true;
+            animator.SetBool("Is On Air", false);
         }
         else
         {
             onGround = false;
+            animator.SetBool("Is On Air", true);
         }
 
         // Jump detection and queueing
